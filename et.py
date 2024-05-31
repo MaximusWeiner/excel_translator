@@ -1,6 +1,5 @@
+import os
 import pandas as pd
-from pandas import DataFrame
-# from googletrans import Translator
 import openai 
 
 # temp
@@ -21,7 +20,7 @@ def ask_gpt(user_input, model_name="gpt-4-turbo"):
     )
     return completion.choices[0].message.content
 
-def translate_excel(input_path, output_path, src_lang='auto', dest_lang='en'):
+def translate_excel(input_path, output_path, dest_lang='en'):
     # Load the Excel file
     df = pd.read_excel(input_path)
     
@@ -31,7 +30,7 @@ def translate_excel(input_path, output_path, src_lang='auto', dest_lang='en'):
             if len(str(text)) > 0:
                 #TODO: use re to filter out non-text cells
                 
-                prompt = f'Translate the text to {dest_lang}, only give me the translation. (or return the text as-is if no translation needed): \n' + text
+                prompt = f'Translate the text to {dest_lang}, only give me the translation. If you cannot tranlsate the provided text or there is no text to translate, just return the text. I do not want any explanations, I only care to see the text itself: \n' + text
                 translated_text = ask_gpt(prompt)
 
                 # print(prompt)
@@ -53,12 +52,16 @@ def translate_excel(input_path, output_path, src_lang='auto', dest_lang='en'):
 
 def run_script():
     # Translate entire sheet
-    input_excel = 'example_sheets/qa_testing_table.xlsx'
-    output_name = 'example_sheets/outputs/cn_test_0.xlsx'
+    # input_excel = 'example_sheets/qa_testing_table.xlsx'
+    # output_name = 'example_sheets/outputs/cn_test_0.xlsx'
+
+    input_excel = os.path.join('example_sheets', 'test_translate.xlsx')
+    output_excel = os.path.join('example_sheets', 'outputs', 'test1.xlsx')
+
     chinese = '简体中文'
     english = 'English'
 
-    translate_excel(input_excel, output_name, src_lang='en', dest_lang=chinese)
+    translate_excel(input_excel, output_excel, dest_lang=english)
 
 if __name__=="__main__":
     run_script()
